@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { COLORS } from '../constants';
-import { formatProgress } from '../utils/timeUtils';
-import { TimerState } from '../types';
 
 interface TimerDisplayProps {
-  timerState: TimerState;
   formattedTime: string;
+  progress: number;
+  isRunning: boolean;
+  isPaused: boolean;
+  isCompleted: boolean;
 }
 
 const { width } = Dimensions.get('window');
@@ -14,14 +15,30 @@ const CIRCLE_SIZE = Math.min(width * 0.7, 300);
 const STROKE_WIDTH = 8;
 
 export const TimerDisplay: React.FC<TimerDisplayProps> = ({
-  timerState,
   formattedTime,
+  progress,
+  isRunning,
+  isPaused,
+  isCompleted,
 }) => {
-  const progress = formatProgress(timerState.elapsedTime);
   const radius = (CIRCLE_SIZE - STROKE_WIDTH) / 2;
   const circumference = 2 * Math.PI * radius;
   const strokeDasharray = circumference;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
+
+  const getStatusText = () => {
+    if (isCompleted) return '완료!';
+    if (isPaused) return '일시정지됨';
+    if (isRunning) return '실행 중...';
+    return '준비됨';
+  };
+
+  const getStatusColor = () => {
+    if (isCompleted) return COLORS.success;
+    if (isPaused) return COLORS.warning;
+    if (isRunning) return COLORS.primary;
+    return COLORS.textSecondary;
+  };
 
   return (
     <View style={styles.container}>
@@ -51,7 +68,12 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
         {/* Time Display */}
         <View style={styles.timeContainer}>
           <Text style={styles.timeText}>{formattedTime}</Text>
-          <Text style={styles.progressText}>{progress.toFixed(1)}%</Text>
+          <Text style={[styles.progressText, { color: getStatusColor() }]}>
+            {progress}% 완료
+          </Text>
+          <Text style={[styles.statusText, { color: getStatusColor() }]}>
+            {getStatusText()}
+          </Text>
         </View>
       </View>
     </View>
@@ -99,8 +121,12 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 16,
-    color: COLORS.textSecondary,
     marginTop: 8,
     fontWeight: '500',
+  },
+  statusText: {
+    fontSize: 14,
+    marginTop: 4,
+    fontWeight: '400',
   },
 });
