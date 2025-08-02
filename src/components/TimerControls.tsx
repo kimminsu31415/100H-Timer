@@ -1,52 +1,53 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { COLORS } from '../constants';
-import { TimerState } from '../types';
 
 interface TimerControlsProps {
-  timerState: TimerState;
-  onStart: () => void;
-  onPause: () => void;
-  onResume: () => void;
+  isRunning: boolean;
+  isPaused: boolean;
+  isCompleted: boolean;
+  onToggle: () => void;
   onReset: () => void;
 }
 
 export const TimerControls: React.FC<TimerControlsProps> = ({
-  timerState,
-  onStart,
-  onPause,
-  onResume,
+  isRunning,
+  isPaused,
+  isCompleted,
+  onToggle,
   onReset,
 }) => {
-  const getMainButtonAction = () => {
-    if (!timerState.isRunning && !timerState.isPaused) {
-      return { text: '시작', action: onStart, color: COLORS.success };
-    } else if (timerState.isRunning) {
-      return { text: '일시정지', action: onPause, color: COLORS.warning };
-    } else {
-      return { text: '재개', action: onResume, color: COLORS.success };
-    }
+  const getMainButtonText = () => {
+    if (isCompleted) return '다시 시작';
+    if (!isRunning) return '시작';
+    if (isPaused) return '재개';
+    return '일시정지';
   };
 
-  const mainButton = getMainButtonAction();
+  const getMainButtonColor = () => {
+    if (isCompleted) return COLORS.success;
+    if (!isRunning) return COLORS.success;
+    if (isPaused) return COLORS.primary;
+    return COLORS.warning;
+  };
+
+  const mainButtonColor = getMainButtonColor();
 
   return (
     <View style={styles.container}>
       <View style={styles.buttonRow}>
         {/* Main Control Button */}
         <TouchableOpacity
-          style={[styles.mainButton, { backgroundColor: mainButton.color }]}
-          onPress={mainButton.action}
+          style={[styles.mainButton, { backgroundColor: mainButtonColor }]}
+          onPress={onToggle}
           activeOpacity={0.8}
         >
-          <Text style={styles.mainButtonText}>{mainButton.text}</Text>
+          <Text style={styles.mainButtonText}>{getMainButtonText()}</Text>
         </TouchableOpacity>
       </View>
 
       {/* Reset Button */}
-      {(timerState.isRunning ||
-        timerState.isPaused ||
-        timerState.elapsedTime > 0) && (
+      {(isRunning || isPaused || isCompleted) && (
         <View style={styles.buttonRow}>
           <TouchableOpacity
             style={styles.resetButton}

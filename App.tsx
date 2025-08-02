@@ -1,34 +1,44 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import {
-  StyleSheet,
-  View,
-  SafeAreaView,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import { StyleSheet, View, SafeAreaView, Text } from 'react-native';
+import { TimerDisplay } from './src/components/TimerDisplay';
+import { TimerControls } from './src/components/TimerControls';
+import { useCountdownTimer } from './src/hooks/useCountdownTimer';
+import { COLORS } from './src/constants';
 
 export default function App() {
-  const [count, setCount] = React.useState(0);
+  const { timerState, formatTime, toggleTimer, resetTimer, isCompleted } =
+    useCountdownTimer();
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>100시간 타이머</Text>
-        <Text style={styles.subtitle}>테스트 성공!</Text>
+        <Text style={styles.subtitle}>
+          {isCompleted ? '🎉 목표 달성!' : '⏱️ 카운트다운 타이머'}
+        </Text>
 
-        <View style={styles.timerDisplay}>
-          <Text style={styles.timerText}>00:00:00</Text>
-        </View>
+        <TimerDisplay
+          formattedTime={formatTime(timerState.timeLeft)}
+          progress={timerState.progress}
+          isRunning={timerState.isRunning}
+          isPaused={timerState.isPaused}
+          isCompleted={isCompleted}
+        />
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => setCount(count + 1)}
-        >
-          <Text style={styles.buttonText}>클릭 테스트 ({count})</Text>
-        </TouchableOpacity>
+        <TimerControls
+          isRunning={timerState.isRunning}
+          isPaused={timerState.isPaused}
+          isCompleted={isCompleted}
+          onToggle={toggleTimer}
+          onReset={resetTimer}
+        />
 
-        <Text style={styles.status}>✅ 앱이 정상 작동 중입니다!</Text>
+        <Text style={styles.status}>
+          {isCompleted
+            ? '✅ 100시간 완료! 축하합니다!'
+            : '💪 목표를 향해 달려가세요!'}
+        </Text>
       </View>
       <StatusBar style="light" />
     </SafeAreaView>
@@ -38,7 +48,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: COLORS.background,
   },
   content: {
     flex: 1,
@@ -49,40 +59,21 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: COLORS.text,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 18,
-    color: '#34C759',
+    color: COLORS.textSecondary,
     marginBottom: 40,
     fontWeight: '600',
-  },
-  timerDisplay: {
-    marginBottom: 40,
-  },
-  timerText: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    fontFamily: 'monospace',
-  },
-  button: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 25,
-    marginBottom: 20,
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    textAlign: 'center',
   },
   status: {
-    color: '#34C759',
+    color: COLORS.success,
     fontSize: 16,
     fontWeight: '500',
     textAlign: 'center',
+    marginTop: 20,
   },
 });
