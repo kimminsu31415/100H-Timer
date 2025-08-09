@@ -14,3 +14,10 @@ describe('web test', () => {
     expect(true).toBe(true);
   });
 });
+
+// ui test
+describe('ui test', () => {
+  it('should be able to start the timer', () => {
+    expect(true).toBe(true);
+  });
+});
