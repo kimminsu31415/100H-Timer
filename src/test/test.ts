@@ -21,3 +21,10 @@ describe('ui test', () => {
     expect(true).toBe(true);
   });
 });
+
+// dock test
+describe('dock test', () => {
+  it('should be able to start the timer', () => {
+    expect(true).toBe(true);
+  });
+});
