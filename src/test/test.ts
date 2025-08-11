@@ -28,3 +28,10 @@ describe('dock test', () => {
     expect(true).toBe(true);
   });
 });
+
+// test
+describe('test', () => {
+  it('should be able to start the timer', () => {
+    expect(true).toBe(true);
+  });
+});
